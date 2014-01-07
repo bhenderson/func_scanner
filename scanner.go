@@ -12,12 +12,10 @@ type Scanner struct {
 	buf   []byte
 	len   int
 	i     int
-	start int
 	end   int
 
-	ntok   rune
-	nstart int
-	nend   int
+	ntok rune
+	size int
 }
 
 func Init(p []byte, split SplitFunc) (s *Scanner) {
@@ -31,7 +29,7 @@ func Init(p []byte, split SplitFunc) (s *Scanner) {
 }
 
 func (s *Scanner) Scan() bool {
-	s.i = s.nstart
+	s.i = s.end
 
 	if s.i >= s.len { // EOF
 		return false
@@ -39,7 +37,7 @@ func (s *Scanner) Scan() bool {
 
 	s.replace()
 
-	if s.nstart == 0 { // first one
+	if s.end == 0 { // first one
 		s.next()
 		s.replace()
 	}
@@ -63,11 +61,12 @@ func (s *Scanner) Tok() rune {
 }
 
 func (s *Scanner) next() {
-	ch, size := utf8.DecodeRune(s.buf[s.nstart:])
-	s.nend = s.nstart + size
+	ch, size := utf8.DecodeRune(s.buf[s.end:])
+	s.size = size
 	s.ntok = s.split(ch)
 }
 
 func (s *Scanner) replace() {
-	s.start, s.end, s.tok, s.nstart = s.nstart, s.nend, s.ntok, s.nend
+	s.end += s.size
+	s.tok = s.ntok
 }
