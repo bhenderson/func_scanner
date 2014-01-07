@@ -24,6 +24,7 @@ func Init(p []byte, split SplitFunc) (s *Scanner) {
 		len:   len(p),
 		split: split,
 	}
+	s.next() // initialize the first one.
 
 	return
 }
@@ -35,16 +36,9 @@ func (s *Scanner) Scan() bool {
 		return false
 	}
 
-	if s.end == 0 { // first one
-		s.replace()
-		s.next()
-	}
-
-	s.replace()
 	s.next()
 
 	for s.tok == s.ntok {
-		s.replace()
 		s.next()
 	}
 
@@ -60,12 +54,10 @@ func (s *Scanner) Tok() rune {
 }
 
 func (s *Scanner) next() {
+	s.end += s.size
+	s.tok = s.ntok
+
 	ch, size := utf8.DecodeRune(s.buf[s.end:])
 	s.size = size
 	s.ntok = s.split(ch)
-}
-
-func (s *Scanner) replace() {
-	s.end += s.size
-	s.tok = s.ntok
 }

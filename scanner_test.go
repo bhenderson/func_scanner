@@ -60,7 +60,7 @@ func TestInvalidBytes(t *testing.T) {
 	refute(t, s.Scan())
 }
 
-func TestScannerTest(t *testing.T) {
+func TestScannerDebug(t *testing.T) {
 	input := []byte("abc.123-a1b1")
 
 	split := func(ch rune) (t rune) {
