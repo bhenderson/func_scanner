@@ -35,13 +35,12 @@ func (s *Scanner) Scan() bool {
 		return false
 	}
 
-	s.replace()
-
 	if s.end == 0 { // first one
-		s.next()
 		s.replace()
+		s.next()
 	}
 
+	s.replace()
 	s.next()
 
 	for s.tok == s.ntok {
