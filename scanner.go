@@ -24,12 +24,15 @@ func Init(p []byte, split SplitFunc) (s *Scanner) {
 		len:   len(p),
 		split: split,
 	}
-	s.next() // initialize the first one.
 
 	return
 }
 
 func (s *Scanner) Scan() bool {
+	if s.tok == 0 { //first one
+		s.next()
+	}
+
 	s.i = s.end
 
 	if s.i >= s.len { // EOF
@@ -42,6 +45,7 @@ func (s *Scanner) Scan() bool {
 		s.next()
 	}
 
+	// 0 is treated as an invalid return value as it's the nil rune
 	if s.tok == 0 {
 		return false
 	}

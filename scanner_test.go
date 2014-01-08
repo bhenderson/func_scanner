@@ -57,6 +57,28 @@ func TestInvalidSplit(t *testing.T) {
 	refute(t, s.Scan())
 }
 
+func TestSplitReturnsZero(t *testing.T) {
+	input := []byte("hi world")
+	exp := []string{"hi"}
+	var act []string
+
+	split := func(ch rune) rune {
+		if ch == ' ' { // kill scanning
+			return 0
+		}
+
+		return -1
+	}
+
+	s := Init(input, split)
+
+	for s.Scan() {
+		act = append(act, s.Text())
+	}
+
+	assertEqual(t, exp, act)
+}
+
 func TestMultiByte(t *testing.T) {
 	input := []byte("hi 世") // don't know what this says, sorry
 	exp := []string{"hi", " ", "世"}
