@@ -38,8 +38,12 @@ func (s *Scanner) Scan() bool {
 
 	s.next()
 
-	for s.tok == s.ntok {
+	for s.tok == s.ntok && s.end < s.len {
 		s.next()
+	}
+
+	if s.tok == 0 {
+		return false
 	}
 
 	return true
@@ -49,6 +53,7 @@ func (s *Scanner) Text() string {
 	return string(s.buf[s.i:s.end])
 }
 
+// If tok is whatever SplitFunc returns. If 0, then scanning stops.
 func (s *Scanner) Tok() rune {
 	return s.tok
 }

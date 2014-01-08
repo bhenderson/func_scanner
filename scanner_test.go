@@ -45,19 +45,62 @@ func TestScanner(t *testing.T) {
 	assertEqual(t, exp, act)
 }
 
-func TestInvalidBytes(t *testing.T) {
-	input := []byte{104, 101, 228, 184, 108, 108, 111} // he<invalid>llo
+func TestInvalidSplit(t *testing.T) {
+	input := []byte("hello")
+
+	split := func(ch rune) rune {
+		return 0
+	}
+
+	s := Init(input, split)
+
+	refute(t, s.Scan())
+}
+
+func TestMultiByte(t *testing.T) {
+	input := []byte("hi 世") // don't know what this says, sorry
+	exp := []string{"hi", " ", "世"}
+	var act []string
 
 	split := func(ch rune) (t rune) {
-		if ch == '世' {
+		if unicode.IsLetter(ch) {
 			t = -1
+		} else {
+			t = -2
 		}
 		return
 	}
 
 	s := Init(input, split)
 
-	refute(t, s.Scan())
+	for s.Scan() {
+		act = append(act, s.Text())
+	}
+
+	assertEqual(t, exp, act)
+}
+
+func TestInvalidBytes(t *testing.T) {
+	input := []byte{104, 101, 228, 184, 108, 108, 111} // he<invalid>llo
+	exp := []string{"he", "\xe4\xb8", "llo"}
+	var act []string
+
+	split := func(ch rune) (t rune) {
+		if unicode.IsLetter(ch) {
+			t = -1
+		} else {
+			t = -2 // error
+		}
+		return
+	}
+
+	s := Init(input, split)
+
+	for s.Scan() {
+		act = append(act, s.Text())
+	}
+
+	assertEqual(t, exp, act)
 }
 
 func TestScannerDebug(t *testing.T) {
@@ -91,6 +134,10 @@ func assertEqual(t *testing.T, expected interface{}, actual interface{}, msg ...
 
 func assert(t *testing.T, act bool, msg ...interface{}) {
 	if !act {
+		if len(msg) <= 0 {
+			t.Fatalf("expected %v to be true.", act)
+		}
+
 		switch v := msg[0].(type) {
 		default:
 			t.Fatal(msg)
