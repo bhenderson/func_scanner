@@ -1,7 +1,7 @@
 package func_scanner
 
 import (
-	"reflect"
+	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
 	"unicode"
@@ -42,7 +42,7 @@ func TestScanner(t *testing.T) {
 		}
 	}
 
-	assertEqual(t, exp, act)
+	assert.Equal(t, exp, act)
 }
 
 func TestInvalidSplit(t *testing.T) {
@@ -54,7 +54,7 @@ func TestInvalidSplit(t *testing.T) {
 
 	s := Init(input, split)
 
-	refute(t, s.Scan())
+	assert.False(t, s.Scan())
 }
 
 func TestSplitReturnsZero(t *testing.T) {
@@ -76,7 +76,7 @@ func TestSplitReturnsZero(t *testing.T) {
 		act = append(act, s.Text())
 	}
 
-	assertEqual(t, exp, act)
+	assert.Equal(t, exp, act)
 }
 
 func TestMultiByte(t *testing.T) {
@@ -99,7 +99,7 @@ func TestMultiByte(t *testing.T) {
 		act = append(act, s.Text())
 	}
 
-	assertEqual(t, exp, act)
+	assert.Equal(t, exp, act)
 }
 
 func TestInvalidBytes(t *testing.T) {
@@ -122,7 +122,7 @@ func TestInvalidBytes(t *testing.T) {
 		act = append(act, s.Text())
 	}
 
-	assertEqual(t, exp, act)
+	assert.Equal(t, exp, act)
 }
 
 func TestScannerDebug(t *testing.T) {
@@ -148,27 +148,15 @@ func TestScannerDebug(t *testing.T) {
 	}
 }
 
-func assertEqual(t *testing.T, expected interface{}, actual interface{}, msg ...string) {
-	assert(t, reflect.DeepEqual(expected, actual),
-		"%v\nexpected\n\t(%T)%#v\nto be equal to\n\t(%T)%#v",
-		msg, expected, expected, actual, actual)
-}
+func TestSetSplit(t *testing.T) {
+	input := []byte("hi")
 
-func assert(t *testing.T, act bool, msg ...interface{}) {
-	if !act {
-		if len(msg) <= 0 {
-			t.Fatalf("expected %v to be true.", act)
-		}
-
-		switch v := msg[0].(type) {
-		default:
-			t.Fatal(msg)
-		case string:
-			t.Fatalf(v, msg[1:]...)
-		}
+	split := func(ch rune) rune {
+		return -1
 	}
-}
 
-func refute(t *testing.T, act bool, msg ...interface{}) {
-	assert(t, !act, msg...)
+	s := Init(input)
+	s.Split(split)
+
+	assert.Equal(t, -1, s.split('h'))
 }
