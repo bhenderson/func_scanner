@@ -18,14 +18,21 @@ type Scanner struct {
 	size int
 }
 
-func Init(p []byte, split SplitFunc) (s *Scanner) {
+func Init(p []byte, split ...SplitFunc) (s *Scanner) {
 	s = &Scanner{
-		buf:   p,
-		len:   len(p),
-		split: split,
+		buf: p,
+		len: len(p),
+	}
+
+	if len(split) > 0 {
+		s.Split(split[0])
 	}
 
 	return
+}
+
+func (s *Scanner) Split(split SplitFunc) {
+	s.split = split
 }
 
 func (s *Scanner) Scan() bool {
