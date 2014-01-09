@@ -1,7 +1,8 @@
-// Package func_scanner is modeled after text/scanner. It takes a simple []byte
-// instead of an io.Reader. It too is for UTF-8-encoded text. A user defines
-// their own split function which groups successive runes together. Any invalid
-// UTF-8 sequence is still given to the split function.
+// Package func_scanner is modeled after bufio.Scanner. (That one is probably
+// better. This one was just to learn.) It takes a simple []byte instead of an
+// io.Reader. It too is for UTF-8-encoded text. A user defines their own split
+// function which groups successive runes together. Any invalid UTF-8 sequence
+// is still given to the split function.
 //
 // Basic Usage:
 //
